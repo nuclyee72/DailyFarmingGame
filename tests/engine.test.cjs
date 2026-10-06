@@ -69,6 +69,11 @@ function dist(counts, expect, total, tol = 0.005) {
   const old = { ...E.newState('2026-09', T0), codex: { 1: 2, 45: 3 } };
   const r = E.rollSeason(old, '2026-10-01', T0);
   check(r.state.season === '2026-10' && same(r.ended, { season: '2026-09', done: 2, stars: 5, total: 12 }) && r.state.inv.mat === 0, '시즌이 바뀌면 history 요약(등록 2 · 별 5 · 도감 12개) + 새 state');
+  const gs = fresh();
+  check(gs.gift === false && E.grantStartGift(gs) && gs.inv.ticket === 10 && same(gs.inv.seed, [10, 5, 0, 0]) && !E.grantStartGift(gs) && gs.inv.ticket === 10,
+    '시작 보상: 완료권 ×10 · 일반 씨앗 ×10 · 고급 씨앗 ×5, 시즌에 한 번');
+  const oldSave = fresh(); delete oldSave.gift;
+  check(E.isValidState(oldSave) && E.grantStartGift(oldSave) && oldSave.gift === true, '표시가 없는 예전 state도 한 번 받음');
   const same1 = E.rollSeason(s, TODAY, T0);
   check(same1.state === s && same1.ended === null, '같은 시즌이면 그대로');
   check(E.daysLeft('2026-10-05') === 26 && E.daysLeft('2026-10-31') === 0 && E.daysLeft('2026-02-28') === 0, '남은 날: 10/5 = D-26, 마지막 날 = D-DAY');

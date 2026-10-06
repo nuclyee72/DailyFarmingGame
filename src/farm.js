@@ -74,10 +74,9 @@
       }
       const r = E.rollSeason(state, today, Date.now());
       state = r.state;
-      if (r.ended) {
-        history.push(r.ended);
-        openNotice(r.ended);
-      }
+      if (r.ended) history.push(r.ended);
+      const gift = E.grantStartGift(state);
+      if (r.ended || gift) openNotice(r.ended, gift);
       E.markAttendance(state, today);
       earnedCache = null;
       save();
@@ -447,14 +446,16 @@
       render();
       openPanel('got', () => gotPanel(r));
     }
+    /** 얻은 것 칸 (탐험 받기 · 시작 보상) */
+    function gotCell(grid, icon, n, label, hidden) {
+      const c = el('div', 'farm-got-cell' + (hidden ? ' is-hidden' : ''));
+      c.title = label;
+      c.append(img(icon, 'farm-icon'), el('strong', null, `×${fmtNum(n)}`), rel('span', null, label));
+      grid.append(c);
+    }
     function gotPanel(r) {
       const grid = el('div', 'farm-got');
-      const cell = (icon, n, label, hidden) => {
-        const c = el('div', 'farm-got-cell' + (hidden ? ' is-hidden' : ''));
-        c.title = label;
-        c.append(img(icon, 'farm-icon'), el('strong', null, `×${fmtNum(n)}`), rel('span', null, label));
-        grid.append(c);
-      };
+      const cell = (...a) => gotCell(grid, ...a);
       r.got.seed.forEach((n, t) => { if (n) cell('seed:' + t, n, `${TIER[t]} 씨앗`); });
       if (r.got.mat) cell('item:mat', r.got.mat, '자재');
       if (r.got.mat2) cell('item:mat2', r.got.mat2, '고급 자재');
@@ -802,6 +803,7 @@
         ]],
         ['시즌', [
           '한 달이 한 시즌이에요. D-1부터 끝난다고 알려 줘요.',
+          `시즌을 시작하면 시작 보상: 즉시 완료권 ×${D.START_GIFT.ticket} · ${D.START_GIFT.seed.map((n, t) => (n ? `${TIER[t]} 씨앗 ×${n}` : '')).filter(Boolean).join(' · ')}.`,
           '시즌이 끝나면 밭 · 가방 · 강화 · 화폐가 처음부터 시작하고, 도감 기록만 남아요.',
         ]],
       ];
@@ -1081,13 +1083,24 @@
       return [list];
     }
 
-    function openNotice(ended) {
-      queueMicrotask(() => openPanel('notice', () => [
-        `${Number(ended.season.slice(5))}월 시즌 끝`,
-        el('p', 'farm-notice', `도감 ${ended.done}/${codexTotal(ended)} · ★${ended.stars}`),
-        el('p', 'farm-hint', '새 시즌이 시작됐어요. 밭 · 가방 · 강화는 처음부터, 도감 기록은 남아요.'),
-        btn('시작하기', closePanel, false, 'landing-btn primary-btn farm-wide'),
-      ]));
+    /** 시즌 안내: 지난 시즌 결과(있으면) + 시작 보상(받았으면) */
+    function openNotice(ended, gift) {
+      queueMicrotask(() => openPanel('notice', () => {
+        const parts = [ended ? `${Number(ended.season.slice(5))}월 시즌 끝` : `${Number(state.season.slice(5))}월 시즌 시작`];
+        if (ended) {
+          parts.push(el('p', 'farm-notice', `도감 ${ended.done}/${codexTotal(ended)} · ★${ended.stars}`),
+            el('p', 'farm-hint', '새 시즌이 시작됐어요. 밭 · 가방 · 강화는 처음부터, 도감 기록은 남아요.'));
+        }
+        if (gift) {
+          const grid = el('div', 'farm-got farm-gift');
+          const g = D.START_GIFT;
+          gotCell(grid, 'item:ticket', g.ticket, '즉시 완료권');
+          g.seed.forEach((n, t) => { if (n) gotCell(grid, 'seed:' + t, n, `${TIER[t]} 씨앗`); });
+          parts.push(el('p', 'farm-gift-title', '시작 보상을 받았어요'), grid);
+        }
+        parts.push(btn('시작하기', closePanel, false, 'landing-btn primary-btn farm-wide'));
+        return parts;
+      }));
     }
 
     // ── 그리기 ──

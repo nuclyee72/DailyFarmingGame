@@ -12,6 +12,9 @@
   // §2 NP: 출석 · 데일리 결과
   const NP = { attend: 5, solved: 3, other: 2 };
 
+  // §3 시즌 시작 보상 (사용자 10/6): 시즌마다 처음 열 때 한 번
+  const START_GIFT = { ticket: 10, seed: [10, 5, 0, 0] };
+
   // §4 탐험: 1시간마다 굴림, 히든 1% → 아니면 분류 → 분류 안 아이템 → 개수
   const EXPLORE = {
     rollsPerHour: 3, // + 탐험 강화 단계
@@ -303,7 +306,7 @@
   });
 
   F.data = {
-    TIERS, NP, EXPLORE, BOX, FIELD, SEED_TO_CROP, HARVEST, CROPS, CROP_BY_ID, QUALITY,
+    TIERS, NP, START_GIFT, EXPLORE, BOX, FIELD, SEED_TO_CROP, HARVEST, CROPS, CROP_BY_ID, QUALITY,
     CRAFT, CRAFT_MONEY, CARE, REUSE, BOUNTY, SYNTH, GEAR, DISMANTLE, CROP_BAG, COOK, SHOP,
     DISHES: DISH_LIST, DISH_BY_ID: Object.fromEntries(DISH_LIST.map((d) => [d.id, d])),
   };

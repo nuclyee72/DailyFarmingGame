@@ -106,7 +106,7 @@
       built: Object.fromEntries(D.CRAFT.map((l) => [l.id, 0])),
       explore: { lastAt: now, boosts: [] },
       shop: { day: null, bought: {} },
-      equip: [], codex: {}, nextGear: 1,
+      equip: [], codex: {}, nextGear: 1, gift: false,
     };
   }
   /** 저장된 값이 쓸 만한지 (깨졌으면 화면이 새 state를 만든다) */
@@ -135,6 +135,15 @@
     if (state && state.season === season) return { state, ended: null };
     const ended = state ? { season: state.season, ...codexSummary(state), total: codexDishes(state.season).length } : null;
     return { state: newState(season, now), ended };
+  }
+  /** 시즌 시작 보상을 넣는다 (시즌마다 한 번, 표시가 없는 예전 state도 한 번). 넣었으면 true */
+  function grantStartGift(state) {
+    if (state.gift) return false;
+    const g = D.START_GIFT;
+    state.inv.ticket += g.ticket;
+    g.seed.forEach((n, t) => { state.inv.seed[t] += n; });
+    state.gift = true;
+    return true;
   }
   /** 그 달 마지막 날까지 남은 날 (0 = D-DAY) */
   function daysLeft(today) {
@@ -611,7 +620,7 @@
 
   F.engine = {
     H, VERSION, rngFromSeed, hashString, mulberry32, quality: QT, rollQuality,
-    seasonOf, newState, isValidState, rollSeason, daysLeft, codexSummary,
+    seasonOf, newState, isValidState, rollSeason, grantStartGift, daysLeft, codexSummary,
     markAttendance, npEarned, npBalance,
     equipSlots, equipCount, gearMods, rollGear, openRelic, gearLook, equipGear, unequipGear, toggleLock, gearAp, canDismantle, dismantleGear, gearOverflow,
     dismantleSeeds, OPT_BY_ID, cropCount, cropOverflow, cropPrice, sellCrops,
