@@ -1,0 +1,9 @@
+{
+  "name": "daily-farming-game",
+  "version": "1.0.0",
+  "private": true,
+  "description": "데일리 농장 — ProjectDaily 허브 카드로 들어가는 농장 게임 (출석 · 데일리 결과 → NP → 탐험 · 농사 · 요리 · 도감)",
+  "scripts": {
+    "test": "node tests/engine.test.cjs"
+  }
+}
