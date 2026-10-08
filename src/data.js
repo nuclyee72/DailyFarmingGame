@@ -46,8 +46,8 @@
     { id: 'box2', p: 0.01, box: 2 },
   ];
 
-  // §5 농사: 8시간 성장, 밭 2칸에서 8칸까지
-  const FIELD = { start: 2, growHours: 8 };
+  // §5 농사: 3시간 성장, 밭 2칸에서 8칸까지
+  const FIELD = { start: 2, growHours: 3 };
   /** 씨앗 등급(줄) → 작물 등급 확률 */
   const SEED_TO_CROP = [
     [0.7, 0.25, 0.05, 0],

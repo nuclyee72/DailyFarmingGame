@@ -163,11 +163,11 @@ function dist(counts, expect, total, tol = 0.005) {
   s.inv.seed = [5, 5, 5, 5];
   check(E.plant(s, 0, 1, T0, rng) === null, '시설 강화 전엔 고급 씨앗 못 심음');
   const plot = E.plant(s, 0, 0, T0, rng);
-  check(plot && plot.readyAt === T0 + 8 * H && s.inv.seed[0] === 4 && E.plant(s, 0, 0, T0, rng) === null, '일반 씨앗 심기 → 8시간 뒤, 심은 칸엔 또 못 심음');
-  check([1, 2, 5, 8].map((h) => E.growthStage(plot, T0 + h * H)).join() === '0,1,2,3', '그림 단계: 씨앗 · 새싹 · 자람 · 다 큼');
-  check(E.harvest(s, 0, T0 + 8 * H - 60000, rng) === null, '7시간 59분 → 아직');
-  const hv = E.harvest(s, 0, T0 + 8 * H, rng);
-  check(hv && hv.qualities.length >= 2 && s.plots[0] === null && s.inv.crop[hv.crop].length === hv.qualities.length, `8시간 → 수확 (${D.CROP_BY_ID[hv.crop].name} ${hv.qualities.length}개)`);
+  check(plot && plot.readyAt === T0 + 3 * H && s.inv.seed[0] === 4 && E.plant(s, 0, 0, T0, rng) === null, '일반 씨앗 심기 → 3시간 뒤, 심은 칸엔 또 못 심음');
+  check([0.25, 1, 2, 3].map((h) => E.growthStage(plot, T0 + h * H)).join() === '0,1,2,3', '그림 단계: 씨앗 · 새싹 · 자람 · 다 큼');
+  check(E.harvest(s, 0, T0 + 3 * H - 60000, rng) === null, '2시간 59분 → 아직');
+  const hv = E.harvest(s, 0, T0 + 3 * H, rng);
+  check(hv && hv.qualities.length >= 2 && s.plots[0] === null && s.inv.crop[hv.crop].length === hv.qualities.length, `3시간 → 수확 (${D.CROP_BY_ID[hv.crop].name} ${hv.qualities.length}개)`);
   E.plant(s, 1, 0, T0, rng);
   s.inv.ticket = 1;
   check(E.useTicket(s, 1, T0 + H) && s.inv.ticket === 0 && E.harvest(s, 1, T0 + H, rng) !== null, '즉시 완료권 → 바로 수확');
